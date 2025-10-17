@@ -1,5 +1,11 @@
 import { openai } from '@ai-sdk/openai';
-import { streamText, UIMessage, convertToModelMessages, tool } from 'ai';
+import {
+  convertToModelMessages,
+  stepCountIs,
+  streamText,
+  tool,
+  UIMessage,
+} from 'ai';
 import z from 'zod';
 
 // Allow streaming responses up to 30 seconds
@@ -9,8 +15,9 @@ export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json();
 
   const result = streamText({
-    model: openai('gpt-5-mini'),
+    model: openai('gpt-5-nano'),
     messages: convertToModelMessages(messages),
+    stopWhen: stepCountIs(5),
     tools: {
       weather: tool({
         description: 'Get the weather in a location (celsius)',
